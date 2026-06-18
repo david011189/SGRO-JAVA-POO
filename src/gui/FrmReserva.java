@@ -72,7 +72,7 @@ public class FrmReserva extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 685, 460);
 		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
@@ -97,7 +97,7 @@ public class FrmReserva extends JFrame {
 		contentPane.add(lblNewLabel_1);
 		
 		JLabel lblNewLabel = new JLabel("ID Reserva");
-		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
+		lblNewLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
 		lblNewLabel.setBounds(127, 72, 84, 13);
 		contentPane.add(lblNewLabel);
 		
@@ -289,6 +289,9 @@ public class FrmReserva extends JFrame {
 
          table.setModel(modelo);
          //tamaño para mostrar a los clientes
+         table.setRowHeight(28);
+         table.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+         table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
 
          table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
          
