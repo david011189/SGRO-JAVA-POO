@@ -129,13 +129,21 @@ public class FrmReserva extends JFrame {
 		txtHabitacion.setBounds(260, 219, 96, 18);
 		contentPane.add(txtHabitacion);
 		txtHabitacion.setColumns(10);
+		contentPane.setBackground(new java.awt.Color(240, 248, 255)); // azul clarito
 		
 		JLabel lblNewLabel_5 = new JLabel("REGISTRO DE RESERVA");
-		lblNewLabel_5.setFont(new Font("Tahoma", Font.BOLD, 16));
+        lblNewLabel_5.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        lblNewLabel_5.setForeground(new java.awt.Color(0, 51, 102));
 		lblNewLabel_5.setBounds(199, 10, 205, 49);
 		contentPane.add(lblNewLabel_5);
 		
 		btnRegistrar = new JButton("Registrar");
+
+		// 👇 ESTILO
+		btnRegistrar.setBackground(new java.awt.Color(0, 123, 255));
+		btnRegistrar.setForeground(java.awt.Color.WHITE);
+		btnRegistrar.setFocusPainted(false);
+        //
 		btnRegistrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -239,6 +247,11 @@ public class FrmReserva extends JFrame {
 		contentPane.add(btnRegistrar);
 		
 		btnLimpiar = new JButton("Limpiar");
+		//colores de botones
+		btnLimpiar.setBackground(new java.awt.Color(108, 117, 125));
+		btnLimpiar.setForeground(java.awt.Color.WHITE);
+		btnLimpiar.setFocusPainted(false);
+        //
 		btnLimpiar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -280,6 +293,11 @@ public class FrmReserva extends JFrame {
          table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
          
          btnEliminar = new JButton("Eliminar");
+         //colores
+         btnEliminar.setBackground(new java.awt.Color(220, 53, 69));
+         btnEliminar.setForeground(java.awt.Color.WHITE);
+         btnEliminar.setFocusPainted(false);
+
          btnEliminar.addActionListener(new ActionListener() {
          	public void actionPerformed(ActionEvent e) {
          		
@@ -309,6 +327,11 @@ public class FrmReserva extends JFrame {
          contentPane.add(btnEliminar);
          
          btnModificar = new JButton("Modificar");
+         //colores de botones
+         btnModificar.setBackground(new java.awt.Color(40, 167, 69));
+         btnModificar.setForeground(java.awt.Color.WHITE);
+         btnModificar.setFocusPainted(false);
+         //
          btnModificar.addActionListener(new ActionListener() {
          	public void actionPerformed(ActionEvent e) {
          		 int fila = table.getSelectedRow();
