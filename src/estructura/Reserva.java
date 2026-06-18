@@ -1,9 +1,5 @@
 package estructura;
 
-
-
-
-
 // RF-30: reserva formal del cliente (una estadía con una o varias habitaciones)
 public class Reserva {
 
