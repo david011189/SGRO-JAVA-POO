@@ -1,5 +1,7 @@
 package estructura;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 // RF-30: reserva formal del cliente (una estadía con una o varias habitaciones)
 public class Reserva {
 
@@ -28,9 +30,22 @@ public class Reserva {
     }
 
     public double calcularCosto() {
-        if (habitacion != null) {
-            return habitacion.getPrecio();
-        } else {
+
+        try {
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+            Date ingreso = sdf.parse(fechaIngreso);
+            Date salida = sdf.parse(fechaSalida);
+
+            long diferencia = salida.getTime() - ingreso.getTime();
+
+            long dias = diferencia / (1000 * 60 * 60 * 24);
+
+            return dias * habitacion.getPrecio();
+
+        } catch (Exception e) {
+
             return 0;
         }
     }

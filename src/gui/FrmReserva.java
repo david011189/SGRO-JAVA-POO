@@ -218,6 +218,7 @@ public class FrmReserva extends JFrame {
 
 				    Reserva reserva = new Reserva(id, cliente, ingreso, salida);
 				    reserva.asignarHabitacion(habitacion);
+				    double costo = reserva.calcularCosto();
                     //Lista de reservas
 
                      listaReservas.add(reserva);
@@ -227,10 +228,15 @@ public class FrmReserva extends JFrame {
                      nombreCliente,
                      ingreso,
                      salida,
-                      numHabitacion
+                      numHabitacion,
+                      "S/ " + costo
                           });
 
-				    JOptionPane.showMessageDialog(null, "Reserva registrada correctamente");
+				    //JOptionPane.showMessageDialog(null, "Reserva registrada correctamente");
+				    JOptionPane.showMessageDialog(
+				    	    null,
+				    	    "Reserva registrada correctamente\nCosto: S/ " + costo
+				    	);
 
 				} catch (Exception ex) {
 				    JOptionPane.showMessageDialog(null, "Error en los datos");
@@ -286,7 +292,7 @@ public class FrmReserva extends JFrame {
          modelo.addColumn("Ingreso");
          modelo.addColumn("Salida");
          modelo.addColumn("Habitación");
-
+         modelo.addColumn("Costo");
          table.setModel(modelo);
          //tamaño para mostrar a los clientes
          table.setRowHeight(28);
@@ -383,11 +389,41 @@ public class FrmReserva extends JFrame {
                 		}
                 		
                 		
+                		// costo modificar
+                		double costo = 0;
+
+                		try {
+                		    Cliente cliente = new Cliente(
+                		            txtCliente.getText(),
+                		            "correo@test.com",
+                		            "123",
+                		            "00000000");
+
+                		    Habitacion habitacion = new Habitacion(
+                		            Integer.parseInt(txtHabitacion.getText()),
+                		            "Simple",
+                		            70);
+
+                		    Reserva reserva = new Reserva(
+                		            1,
+                		            cliente,
+                		            txtIngreso.getText(),
+                		            txtFechaSalida.getText());
+
+                		    reserva.asignarHabitacion(habitacion);
+
+                		    costo = reserva.calcularCosto();
+
+                		} catch (Exception ex) {
+                		    JOptionPane.showMessageDialog(null, "Error al recalcular costo");
+                		    return;
+                		}
                 		//
                      modelo.setValueAt(txtCliente.getText(), fila, 1);
                      modelo.setValueAt(txtIngreso.getText(), fila, 2);
                      modelo.setValueAt(txtFechaSalida.getText(), fila, 3);
                      modelo.setValueAt(txtHabitacion.getText(), fila, 4);
+                     modelo.setValueAt("S/ " + costo, fila, 5);
 
                      JOptionPane.showMessageDialog(null, "Reserva actualizada");
 

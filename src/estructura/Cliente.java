@@ -20,6 +20,12 @@ public class Cliente extends Usuario {
     //Se agrego para el mantenimiento del cliente
     public String getCorreo() {
         return correo;
+               
+    }
+    
+    @Override
+    public void registrar() {
+        System.out.println("Cliente registrado: " + nombre);
     }
     
 }
