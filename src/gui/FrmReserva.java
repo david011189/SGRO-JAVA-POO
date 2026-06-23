@@ -1,5 +1,8 @@
 package gui;
-
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import estructura.ConexionBD;
+import java.sql.ResultSet;
 
 import estructura.Cliente;
 import estructura.Habitacion;
@@ -43,9 +46,11 @@ public class FrmReserva extends JFrame {
 	private JTable table;
     private DefaultTableModel modelo;
     private ArrayList<Reserva> listaReservas = new ArrayList<>();
-    private int contador = 1;
+    //private int contador = 1;
+    private int contador;
     private JButton btnEliminar;
     private JButton btnModificar;
+    private JTextField txtCosto;
    
 
 
@@ -75,12 +80,14 @@ public class FrmReserva extends JFrame {
 		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		//agregar id
+		contador = obtenerSiguienteId();
 		
 		JLabel lblNewLabel_4 = new JLabel("Habitación");
 		lblNewLabel_4.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblNewLabel_4.setBounds(127, 219, 64, 13);
 		contentPane.add(lblNewLabel_4);
-		
+	
 		JLabel lblNewLabel_3 = new JLabel("Cliente");
 		lblNewLabel_3.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblNewLabel_3.setBounds(127, 183, 47, 13);
@@ -146,6 +153,7 @@ public class FrmReserva extends JFrame {
         //
 		btnRegistrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
 				
 				try {
 					if (txtCliente.getText().isEmpty()) {
@@ -219,10 +227,37 @@ public class FrmReserva extends JFrame {
 				    Reserva reserva = new Reserva(id, cliente, ingreso, salida);
 				    reserva.asignarHabitacion(habitacion);
 				    double costo = reserva.calcularCosto();
+				    txtCosto.setText("S/ " + costo);
                     //Lista de reservas
 
                      listaReservas.add(reserva);
+                      //Registrar en BD
+                     Connection conn = ConexionBD.conectar();
+                     String sql = "INSERT INTO reserva(cliente, fecha_ingreso, fecha_salida, habitacion, costo) VALUES (?, ?, ?, ?, ?)";
+                     //
+                     PreparedStatement ps = conn.prepareStatement(sql);
+                     //
+                     ps.setString(1, nombreCliente);
+                     // registro de fechas formato
+                     String ingresoBD = txtIngreso.getText();
+                     String[] f1 = ingresoBD.split("/");
+                     ingresoBD = f1[2] + "-" + f1[1] + "-" + f1[0];
 
+                     String salidaBD = txtFechaSalida.getText();
+                     String[] f2 = salidaBD.split("/");
+                     salidaBD = f2[2] + "-" + f2[1] + "-" + f2[0];
+                     //
+                     ps.setString(2, ingresoBD);
+                     ps.setString(3, salidaBD);
+                     ps.setInt(4, numHabitacion);
+                     ps.setDouble(5, costo);
+
+                     ps.executeUpdate();
+                     limpiarCampos();
+                     ps.close();
+                     conn.close();
+                     //
+                     
                      modelo.addRow(new Object[]{
                     		 idVisual,
                      nombreCliente,
@@ -237,7 +272,7 @@ public class FrmReserva extends JFrame {
 				    	    null,
 				    	    "Reserva registrada correctamente\nCosto: S/ " + costo
 				    	);
-
+                 
 				} catch (Exception ex) {
 				    JOptionPane.showMessageDialog(null, "Error en los datos");
 				}
@@ -249,7 +284,7 @@ public class FrmReserva extends JFrame {
 				
 			}
 		});
-		btnRegistrar.setBounds(56, 294, 96, 20);
+		btnRegistrar.setBounds(56, 325, 96, 20);
 		contentPane.add(btnRegistrar);
 		
 		btnLimpiar = new JButton("Limpiar");
@@ -271,7 +306,7 @@ public class FrmReserva extends JFrame {
 				
 			}
 		});
-		btnLimpiar.setBounds(213, 294, 84, 20);
+		btnLimpiar.setBounds(214, 325, 84, 20);
 		contentPane.add(btnLimpiar);
 		
 		
@@ -280,7 +315,7 @@ public class FrmReserva extends JFrame {
 		//contentPane.add(table);
 
         JScrollPane scroll = new JScrollPane(table);
-        scroll.setBounds(366, 145, 260, 184);
+        scroll.setBounds(366, 145, 295, 184);
         contentPane.add(scroll);
 
         //jtable
@@ -312,27 +347,52 @@ public class FrmReserva extends JFrame {
          		
          		int fila = table.getSelectedRow();
 
-         		if (fila >= 0) {
+                if (fila >= 0) {
 
-         			int confirm = JOptionPane.showConfirmDialog(
-         			        null,
-         			        "¿Eliminar reserva?");
+                    int confirm = JOptionPane.showConfirmDialog(
+                            null,
+                            "¿Eliminar reserva?");
 
-         			if (confirm == JOptionPane.YES_OPTION) {
+                    if (confirm == JOptionPane.YES_OPTION) {
 
-         			    modelo.removeRow(fila);
-         			    listaReservas.remove(fila);
+                        //String cliente = modelo.getValueAt(fila, 1).toString();
+                    	String idTexto = txtId.getText().replace("RES-", "");
+                    	int idBD = Integer.parseInt(idTexto);
+                               
+                        try {
 
-         			    JOptionPane.showMessageDialog(null, "Reserva eliminada");
-         			}
+                            Connection conn = ConexionBD.conectar();
 
-         		} else {
-         		    JOptionPane.showMessageDialog(null, "Seleccione una fila");
-         		}	
-         		
-         	}
-         });
-         btnEliminar.setBounds(56, 344, 96, 19);
+                            String sql = "DELETE FROM reserva WHERE id=?";
+
+                            PreparedStatement ps = conn.prepareStatement(sql);
+
+                            //ps.setString(1, cliente);
+                            ps.setInt(1, idBD);
+
+                            ps.executeUpdate();
+                            ps.close();
+                            conn.close();
+
+                            modelo.removeRow(fila);
+                            //listaReservas.remove(fila);
+
+                            JOptionPane.showMessageDialog(null, "Reserva eliminada");
+                            limpiarCampos();
+
+                        } catch (Exception ex) {
+
+                            JOptionPane.showMessageDialog(null, "Error al eliminar en la BD");
+
+                        }
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila");
+                }
+            }
+        });
+         btnEliminar.setBounds(56, 369, 96, 19);
          contentPane.add(btnEliminar);
          
          btnModificar = new JButton("Modificar");
@@ -413,6 +473,7 @@ public class FrmReserva extends JFrame {
                 		    reserva.asignarHabitacion(habitacion);
 
                 		    costo = reserva.calcularCosto();
+                		    txtCosto.setText("S/ " + costo);
 
                 		} catch (Exception ex) {
                 		    JOptionPane.showMessageDialog(null, "Error al recalcular costo");
@@ -424,8 +485,54 @@ public class FrmReserva extends JFrame {
                      modelo.setValueAt(txtFechaSalida.getText(), fila, 3);
                      modelo.setValueAt(txtHabitacion.getText(), fila, 4);
                      modelo.setValueAt("S/ " + costo, fila, 5);
+                     //Mofifica en la BD
+                     try {
 
+                    	    Connection conn = ConexionBD.conectar();
+
+                    	    // Obtener el ID visual: RES-012 -> 12
+                    	    String idTexto = txtId.getText().replace("RES-", "");
+                    	    int idBD = Integer.parseInt(idTexto);
+
+                    	    //String sql = "UPDATE reserva SET cliente=?, habitacion=?, costo=? WHERE id=?";
+                    	    String sql = "UPDATE reserva SET cliente=?, fecha_ingreso=?, fecha_salida=?, habitacion=?, costo=? WHERE id=?";
+
+                    	    PreparedStatement ps = conn.prepareStatement(sql);
+                    	 // convertir fechas para MySQL
+                    	    String ingresoBD = txtIngreso.getText();
+                    	    String[] f1 = ingresoBD.split("/");
+                    	    ingresoBD = f1[2] + "-" + f1[1] + "-" + f1[0];
+
+                    	    String salidaBD = txtFechaSalida.getText();
+                    	    String[] f2 = salidaBD.split("/");
+                    	    salidaBD = f2[2] + "-" + f2[1] + "-" + f2[0];
+                    	    //
+                    	    //ps.setString(1, txtCliente.getText());
+                    	    //ps.setInt(2, Integer.parseInt(txtHabitacion.getText()));
+                    	    //ps.setDouble(3, costo);
+                    	    //ps.setInt(4, idBD);
+                    	    //modificación bd
+                    	    ps.setString(1, txtCliente.getText());
+                    	    ps.setString(2, ingresoBD);
+                    	    ps.setString(3, salidaBD);
+                    	    ps.setInt(4, Integer.parseInt(txtHabitacion.getText()));
+                    	    ps.setDouble(5, costo);
+                    	    ps.setInt(6, idBD);
+
+                    	    int filas = ps.executeUpdate();
+                    	    ps.close();
+                    	    conn.close();
+
+                    	    System.out.println("Filas actualizadas: " + filas);
+
+                    	} catch (Exception ex) {
+
+                    	    ex.printStackTrace();
+                    	    JOptionPane.showMessageDialog(null, ex.getMessage());
+                    	}                   
+                     //
                      JOptionPane.showMessageDialog(null, "Reserva actualizada");
+                     limpiarCampos();
 
                  } else {
 
@@ -435,8 +542,18 @@ public class FrmReserva extends JFrame {
          		
          	}
          });
-         btnModificar.setBounds(213, 343, 96, 20);
+         btnModificar.setBounds(213, 368, 96, 20);
          contentPane.add(btnModificar);
+         
+         txtCosto = new JTextField();
+         txtCosto.setBounds(260, 260, 96, 18);
+         contentPane.add(txtCosto);
+         txtCosto.setColumns(10);
+         
+         JLabel lblNewLabel_4_1 = new JLabel("Costo");
+         lblNewLabel_4_1.setFont(new Font("Tahoma", Font.BOLD, 12));
+         lblNewLabel_4_1.setBounds(127, 263, 64, 13);
+         contentPane.add(lblNewLabel_4_1);
 
          table.getColumnModel().getColumn(0).setPreferredWidth(50);  // ID
          table.getColumnModel().getColumn(1).setPreferredWidth(120); // Cliente
@@ -456,10 +573,100 @@ public class FrmReserva extends JFrame {
         	            txtIngreso.setText(modelo.getValueAt(fila, 2).toString());
         	            txtFechaSalida.setText(modelo.getValueAt(fila, 3).toString());
         	            txtHabitacion.setText(modelo.getValueAt(fila, 4).toString());
+        	            txtCosto.setText(modelo.getValueAt(fila, 5).toString());
         	        }
-        	    }
+        	    }   
+         
         	});
-
-
+         cargarReservas();
+         //limpiar todo
+         
+         
 	}
+	// ← aquí termina el MouseListener
+    private int obtenerSiguienteId() {
+
+   	    try {
+
+   	        Connection conn = ConexionBD.conectar();
+
+   	        String sql = "SELECT MAX(id) FROM reserva";
+
+   	        PreparedStatement ps = conn.prepareStatement(sql);
+
+   	        ResultSet rs = ps.executeQuery();
+
+   	           int siguienteId = 1;
+               if (rs.next()) {
+               siguienteId = rs.getInt(1) + 1;
+               }
+               // cerrar conexiones
+               rs.close();
+               ps.close();
+               conn.close();
+
+               return siguienteId;
+
+   	           } catch (Exception e) {
+   	            e.printStackTrace();
+   	           }        	    
+   	    return 1;
+    }
+    
+    private void cargarReservas() {
+
+        try {
+
+            Connection conn = ConexionBD.conectar();
+
+            String sql = "SELECT * FROM reserva";
+
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ResultSet rs = ps.executeQuery();
+
+            modelo.setRowCount(0);
+
+            while (rs.next()) {
+
+                String ingreso = rs.getString("fecha_ingreso");
+                String[] f1 = ingreso.split("-");
+                ingreso = f1[2] + "/" + f1[1] + "/" + f1[0];
+
+                String salida = rs.getString("fecha_salida");
+                String[] f2 = salida.split("-");
+                salida = f2[2] + "/" + f2[1] + "/" + f2[0];
+
+                modelo.addRow(new Object[]{
+
+                    "RES-" + String.format("%03d", rs.getInt("id")),
+                    rs.getString("cliente"),
+                    ingreso,
+                    salida,
+                    rs.getInt("habitacion"),
+                    "S/ " + rs.getDouble("costo")
+
+                });
+            }
+            //Cerrar conexiones
+            rs.close();
+            ps.close();
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void limpiarCampos() {
+    	txtId.setText("");
+        txtIngreso.setText("");
+        txtFechaSalida.setText("");
+        txtCliente.setText("");
+        txtHabitacion.setText("");
+        txtCosto.setText("");
+
+        contador = obtenerSiguienteId();
+        txtId.setText(String.format("RES-%03d", contador));
+    }
 }
