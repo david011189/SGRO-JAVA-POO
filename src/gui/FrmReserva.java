@@ -75,7 +75,7 @@ public class FrmReserva extends JFrame {
 	 */
 	public FrmReserva() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 685, 460);
+		setBounds(100, 100, 1000, 600);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		setContentPane(contentPane);
@@ -109,7 +109,7 @@ public class FrmReserva extends JFrame {
 		contentPane.add(lblNewLabel);
 		
 		txtId = new JTextField();
-		txtId.setBounds(260, 72, 96, 19);
+		txtId.setBounds(260, 72, 120, 25);
 		contentPane.add(txtId);
 		txtId.setColumns(10);
          //ID CREACION AUTOMATICA
@@ -118,22 +118,22 @@ public class FrmReserva extends JFrame {
 
 		
 		txtIngreso = new JTextField();
-		txtIngreso.setBounds(260, 108, 96, 18);
+		txtIngreso.setBounds(260, 108, 120, 25);
 		contentPane.add(txtIngreso);
 		txtIngreso.setColumns(10);
 		
 		txtFechaSalida = new JTextField();
-		txtFechaSalida.setBounds(260, 145, 96, 18);
+		txtFechaSalida.setBounds(260, 145, 120, 25);
 		contentPane.add(txtFechaSalida);
 		txtFechaSalida.setColumns(10);
 		
 		txtCliente = new JTextField();
-		txtCliente.setBounds(260, 183, 96, 18);
+		txtCliente.setBounds(260, 183, 120, 25);
 		contentPane.add(txtCliente);
 		txtCliente.setColumns(10);
 		
 		txtHabitacion = new JTextField();
-		txtHabitacion.setBounds(260, 219, 96, 18);
+		txtHabitacion.setBounds(260, 219, 120, 25);
 		contentPane.add(txtHabitacion);
 		txtHabitacion.setColumns(10);
 		contentPane.setBackground(new java.awt.Color(240, 248, 255)); // azul clarito
@@ -284,7 +284,7 @@ public class FrmReserva extends JFrame {
 				
 			}
 		});
-		btnRegistrar.setBounds(56, 325, 96, 20);
+		btnRegistrar.setBounds(80, 360, 130, 35);
 		contentPane.add(btnRegistrar);
 		
 		btnLimpiar = new JButton("Limpiar");
@@ -306,7 +306,7 @@ public class FrmReserva extends JFrame {
 				
 			}
 		});
-		btnLimpiar.setBounds(214, 325, 84, 20);
+		btnLimpiar.setBounds(250, 360, 130, 35);
 		contentPane.add(btnLimpiar);
 		
 		
@@ -315,7 +315,7 @@ public class FrmReserva extends JFrame {
 		//contentPane.add(table);
 
         JScrollPane scroll = new JScrollPane(table);
-        scroll.setBounds(366, 145, 295, 184);
+        scroll.setBounds(430, 135, 500, 300);
         contentPane.add(scroll);
 
         //jtable
@@ -392,7 +392,7 @@ public class FrmReserva extends JFrame {
                 }
             }
         });
-         btnEliminar.setBounds(56, 369, 96, 19);
+         btnEliminar.setBounds(80, 430, 130, 35);
          contentPane.add(btnEliminar);
          
          btnModificar = new JButton("Modificar");
@@ -542,11 +542,11 @@ public class FrmReserva extends JFrame {
          		
          	}
          });
-         btnModificar.setBounds(213, 368, 96, 20);
+         btnModificar.setBounds(250, 430, 130, 35);
          contentPane.add(btnModificar);
          
          txtCosto = new JTextField();
-         txtCosto.setBounds(260, 260, 96, 18);
+         txtCosto.setBounds(260, 260, 120, 25);
          contentPane.add(txtCosto);
          txtCosto.setColumns(10);
          
@@ -556,7 +556,7 @@ public class FrmReserva extends JFrame {
          contentPane.add(lblNewLabel_4_1);
 
          table.getColumnModel().getColumn(0).setPreferredWidth(50);  // ID
-         table.getColumnModel().getColumn(1).setPreferredWidth(120); // Cliente
+         table.getColumnModel().getColumn(1).setPreferredWidth(180); // Cliente
          table.getColumnModel().getColumn(2).setPreferredWidth(100); // Ingreso
          table.getColumnModel().getColumn(3).setPreferredWidth(100); // Salida
          table.getColumnModel().getColumn(4).setPreferredWidth(100); // Habitación
