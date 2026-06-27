@@ -13,15 +13,10 @@ public class Cliente extends Usuario {
         System.out.println("Mostrando reservas del cliente");
     }
     
-    public String getDni() {
-        return dni;
-    }
-    
-    //Se agrego para el mantenimiento del cliente
-    public String getCorreo() {
-        return correo;
-               
-    }
+    public String getDni() { return dni; }
+    public void setDni(String dni) { this.dni = dni; }
+
+    public String getCorreo() { return correo; }
     
     @Override
     public void registrar() {
