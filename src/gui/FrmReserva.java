@@ -1,4 +1,5 @@
 package gui;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import estructura.ConexionBD;
@@ -11,16 +12,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import com.toedter.calendar.JDateChooser;
 
-// guardar varias reservas y mostrarlas en una tabla (JTable)
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 
-
-
-
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -34,638 +31,405 @@ import javax.swing.JTable;
 
 public class FrmReserva extends JFrame {
 
-	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-	private JTextField txtId;
-	private JTextField txtIngreso;
-	private JTextField txtFechaSalida;
-	private JTextField txtCliente;
-	private JTextField txtHabitacion;
-	private JButton btnRegistrar;
-	private JButton btnLimpiar;
-	private JTable table;
+    private static final long serialVersionUID = 1L;
+    private JPanel contentPane;
+    private JTextField txtId;
+    private JDateChooser txtIngreso;
+    private JDateChooser txtFechaSalida;
+    private JTextField txtCliente;
+    private JTextField txtHabitacion;
+    private JButton btnRegistrar;
+    private JButton btnLimpiar;
+    private JTable table;
     private DefaultTableModel modelo;
     private ArrayList<Reserva> listaReservas = new ArrayList<>();
-    //private int contador = 1;
     private int contador;
     private JButton btnEliminar;
     private JButton btnModificar;
     private JTextField txtCosto;
-   
+    private String clienteLogueado = "";
 
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    FrmReserva frame = new FrmReserva("");
+                    frame.setVisible(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					FrmReserva frame = new FrmReserva();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+    public FrmReserva(String nombreCliente) {
+        this.clienteLogueado = nombreCliente;
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setBounds(100, 100, 1000, 600);
+        contentPane = new JPanel();
+        contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+        setContentPane(contentPane);
+        contentPane.setLayout(null);
+        contador = obtenerSiguienteId();
 
-	/**
-	 * Create the frame.
-	 */
-	public FrmReserva() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1000, 600);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
-		setContentPane(contentPane);
-		contentPane.setLayout(null);
-		//agregar id
-		contador = obtenerSiguienteId();
-		
-		JLabel lblNewLabel_4 = new JLabel("Habitación");
-		lblNewLabel_4.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblNewLabel_4.setBounds(127, 219, 64, 13);
-		contentPane.add(lblNewLabel_4);
-	
-		JLabel lblNewLabel_3 = new JLabel("Cliente");
-		lblNewLabel_3.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblNewLabel_3.setBounds(127, 183, 47, 13);
-		contentPane.add(lblNewLabel_3);
-		
-		JLabel lblNewLabel_2 = new JLabel("Fecha Salida");
-		lblNewLabel_2.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblNewLabel_2.setBounds(127, 145, 96, 13);
-		contentPane.add(lblNewLabel_2);
-		
-		JLabel lblNewLabel_1 = new JLabel("Fecha Ingreso");
-		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblNewLabel_1.setBounds(127, 108, 96, 13);
-		contentPane.add(lblNewLabel_1);
-		
-		JLabel lblNewLabel = new JLabel("ID Reserva");
-		lblNewLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-		lblNewLabel.setBounds(127, 72, 84, 13);
-		contentPane.add(lblNewLabel);
-		
-		txtId = new JTextField();
-		txtId.setBounds(260, 72, 120, 25);
-		contentPane.add(txtId);
-		txtId.setColumns(10);
-         //ID CREACION AUTOMATICA
+        contentPane.setBackground(new java.awt.Color(240, 248, 255));
+
+        JLabel lblTitulo = new JLabel("REGISTRO DE RESERVA");
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        lblTitulo.setForeground(new java.awt.Color(0, 51, 102));
+        lblTitulo.setBounds(199, 10, 250, 49);
+        contentPane.add(lblTitulo);
+
+        // ID Reserva
+        JLabel lblId = new JLabel("ID Reserva");
+        lblId.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblId.setBounds(127, 72, 84, 13);
+        contentPane.add(lblId);
+        txtId = new JTextField();
+        txtId.setBounds(260, 72, 120, 25);
         txtId.setEditable(false);
         txtId.setText(String.format("RES-%03d", contador));
+        contentPane.add(txtId);
 
-		
-		txtIngreso = new JTextField();
-		txtIngreso.setBounds(260, 108, 120, 25);
-		contentPane.add(txtIngreso);
-		txtIngreso.setColumns(10);
-		
-		txtFechaSalida = new JTextField();
-		txtFechaSalida.setBounds(260, 145, 120, 25);
-		contentPane.add(txtFechaSalida);
-		txtFechaSalida.setColumns(10);
-		
-		txtCliente = new JTextField();
-		txtCliente.setBounds(260, 183, 120, 25);
-		contentPane.add(txtCliente);
-		txtCliente.setColumns(10);
-		
-		txtHabitacion = new JTextField();
-		txtHabitacion.setBounds(260, 219, 120, 25);
-		contentPane.add(txtHabitacion);
-		txtHabitacion.setColumns(10);
-		contentPane.setBackground(new java.awt.Color(240, 248, 255)); // azul clarito
-		
-		JLabel lblNewLabel_5 = new JLabel("REGISTRO DE RESERVA");
-        lblNewLabel_5.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        lblNewLabel_5.setForeground(new java.awt.Color(0, 51, 102));
-		lblNewLabel_5.setBounds(199, 10, 205, 49);
-		contentPane.add(lblNewLabel_5);
-		
-		btnRegistrar = new JButton("Registrar");
+        // Fecha Ingreso
+        JLabel lblIngreso = new JLabel("Fecha Ingreso");
+        lblIngreso.setFont(new Font("Tahoma", Font.BOLD, 12));
+        lblIngreso.setBounds(127, 108, 96, 13);
+        contentPane.add(lblIngreso);
+        txtIngreso = new JDateChooser();
+        txtIngreso.setDateFormatString("dd/MM/yyyy");
+        txtIngreso.setBounds(260, 104, 150, 25);
+        contentPane.add(txtIngreso);
 
-		// 👇 ESTILO
-		btnRegistrar.setBackground(new java.awt.Color(0, 123, 255));
-		btnRegistrar.setForeground(java.awt.Color.WHITE);
-		btnRegistrar.setFocusPainted(false);
-        //
-		btnRegistrar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				
-				try {
-					if (txtCliente.getText().isEmpty()) {
-					    JOptionPane.showMessageDialog(null, "Ingrese cliente");
-					    return;
-					}
-					
-					if (txtIngreso.getText().isEmpty()) {
-					    JOptionPane.showMessageDialog(null, "Ingrese fecha ingreso");
-					    return;
-					}
-					
-					if (txtFechaSalida.getText().isEmpty()) {
-					    JOptionPane.showMessageDialog(null, "Ingrese fecha salida");
-					    return;
-					}
-					
-					if (txtHabitacion.getText().isEmpty()) {
-					    JOptionPane.showMessageDialog(null, "Ingrese habitación");
-					    return;
-					}
-					
-					// NUEVAS VALIDACIONES
-					if (!txtCliente.getText().matches("[a-zA-Z ]+")) {
-					    JOptionPane.showMessageDialog(null, "El nombre solo debe contener letras");
-					    return;
-					}
+        // Fecha Salida
+        JLabel lblSalida = new JLabel("Fecha Salida");
+        lblSalida.setFont(new Font("Tahoma", Font.BOLD, 12));
+        lblSalida.setBounds(127, 145, 96, 13);
+        contentPane.add(lblSalida);
+        txtFechaSalida = new JDateChooser();
+        txtFechaSalida.setDateFormatString("dd/MM/yyyy");
+        txtFechaSalida.setBounds(260, 141, 150, 25);
+        contentPane.add(txtFechaSalida);
 
-					if (!txtHabitacion.getText().matches("\\d+")) {
-					    JOptionPane.showMessageDialog(null, "La habitación debe contener solo números");
-					    return;
-					}
+        // Cliente
+        JLabel lblCliente = new JLabel("Cliente");
+        lblCliente.setFont(new Font("Tahoma", Font.BOLD, 12));
+        lblCliente.setBounds(127, 183, 47, 13);
+        contentPane.add(lblCliente);
+        txtCliente = new JTextField();
+        txtCliente.setBounds(260, 183, 150, 25);
+        txtCliente.setText(clienteLogueado);
+        txtCliente.setEditable(false);
+        txtCliente.setBackground(new java.awt.Color(230, 230, 230));
+        contentPane.add(txtCliente);
 
-					if (!txtIngreso.getText().matches("\\d{2}/\\d{2}/\\d{4}")) {
-					    JOptionPane.showMessageDialog(null, "Formato fecha ingreso: dd/MM/yyyy");
-					    return;
-					}
+        // Habitacion
+        JLabel lblHabitacion = new JLabel("Habitación");
+        lblHabitacion.setFont(new Font("Tahoma", Font.BOLD, 12));
+        lblHabitacion.setBounds(127, 219, 64, 13);
+        contentPane.add(lblHabitacion);
+        txtHabitacion = new JTextField();
+        txtHabitacion.setBounds(260, 219, 150, 25);
+        contentPane.add(txtHabitacion);
 
-					if (!txtFechaSalida.getText().matches("\\d{2}/\\d{2}/\\d{4}")) {
-					    JOptionPane.showMessageDialog(null, "Formato fecha salida: dd/MM/yyyy");
-					    return;
-					}
-					
-					//comparación de fechas
-					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-					sdf.setLenient(false);
+        // Costo
+        JLabel lblCosto = new JLabel("Costo");
+        lblCosto.setFont(new Font("Tahoma", Font.BOLD, 12));
+        lblCosto.setBounds(127, 263, 64, 13);
+        contentPane.add(lblCosto);
+        txtCosto = new JTextField();
+        txtCosto.setBounds(260, 260, 150, 25);
+        txtCosto.setEditable(true);
+        contentPane.add(txtCosto);
 
-					Date fechaIngreso = sdf.parse(txtIngreso.getText());
-					Date fechaSalida = sdf.parse(txtFechaSalida.getText());
+        // Botón Registrar
+        btnRegistrar = new JButton("Registrar");
+        btnRegistrar.setBackground(new java.awt.Color(0, 123, 255));
+        btnRegistrar.setForeground(java.awt.Color.WHITE);
+        btnRegistrar.setFocusPainted(false);
+        btnRegistrar.setBounds(80, 360, 130, 35);
+        contentPane.add(btnRegistrar);
 
-					if (fechaSalida.before(fechaIngreso)) {
-					    JOptionPane.showMessageDialog(null,
-					            "La fecha de salida debe ser posterior a la fecha de ingreso");
-					    return;
-					}
-					
-					
-					
-				    //int id = Integer.parseInt(txtId.getText());
-                    //contador de reservas automaticas
+        btnRegistrar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (txtIngreso.getDate() == null) {
+                        JOptionPane.showMessageDialog(null, "Seleccione fecha de ingreso"); return;
+                    }
+                    if (txtFechaSalida.getDate() == null) {
+                        JOptionPane.showMessageDialog(null, "Seleccione fecha de salida"); return;
+                    }
+                    if (txtHabitacion.getText().isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Ingrese habitación"); return;
+                    }
+                    if (!txtHabitacion.getText().matches("\\d+")) {
+                        JOptionPane.showMessageDialog(null, "La habitación debe contener solo números"); return;
+                    }
+
+                    Date fechaIngreso = txtIngreso.getDate();
+                    Date fechaSalida  = txtFechaSalida.getDate();
+
+                    if (!fechaSalida.after(fechaIngreso)) {
+                        JOptionPane.showMessageDialog(null, "La fecha de salida debe ser posterior a la de ingreso"); return;
+                    }
+
+                    SimpleDateFormat sdf   = new SimpleDateFormat("dd/MM/yyyy");
+                    SimpleDateFormat sdfBD = new SimpleDateFormat("yyyy-MM-dd");
+                    String ingreso   = sdf.format(fechaIngreso);
+                    String salida    = sdf.format(fechaSalida);
+                    String ingresoBD = sdfBD.format(fechaIngreso);
+                    String salidaBD  = sdfBD.format(fechaSalida);
+
+                    if (txtCosto.getText().trim().isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Ingrese el costo"); return;
+                    }
+                    double costo;
+                    try {
+                        costo = Double.parseDouble(txtCosto.getText().trim());
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(null, "El costo debe ser un número válido"); return;
+                    }
+
                     int id = contador++;
-                    String idVisual = String.format("RES-%03d", id);
-				    String ingreso = txtIngreso.getText();
-				    String salida = txtFechaSalida.getText();
-				    String nombreCliente = txtCliente.getText();
-				    int numHabitacion = Integer.parseInt(txtHabitacion.getText());
+                    String idVisual      = String.format("RES-%03d", id);
+                    String nombreCliente = txtCliente.getText();
+                    int numHabitacion    = Integer.parseInt(txtHabitacion.getText());
 
-				    Cliente cliente = new Cliente(nombreCliente, "correo@test.com", "123", "00000000");
-				    Habitacion habitacion = new Habitacion(numHabitacion, "Simple", 70);
+                    Connection conn = ConexionBD.conectar();
+                    String sql = "INSERT INTO reserva(cliente, fecha_ingreso, fecha_salida, habitacion, costo) VALUES (?, ?, ?, ?, ?)";
+                    PreparedStatement ps = conn.prepareStatement(sql);
+                    ps.setString(1, nombreCliente);
+                    ps.setString(2, ingresoBD);
+                    ps.setString(3, salidaBD);
+                    ps.setInt(4, numHabitacion);
+                    ps.setDouble(5, costo);
+                    ps.executeUpdate();
+                    ps.close();
+                    conn.close();
 
-				    Reserva reserva = new Reserva(id, cliente, ingreso, salida);
-				    reserva.asignarHabitacion(habitacion);
-				    double costo = reserva.calcularCosto();
-				    txtCosto.setText("S/ " + costo);
-                    //Lista de reservas
+                    modelo.addRow(new Object[]{idVisual, nombreCliente, ingreso, salida, numHabitacion, "S/ " + costo});
+                    limpiarCampos();
+                    JOptionPane.showMessageDialog(null, "Reserva registrada correctamente\nCosto: S/ " + costo);
 
-                     listaReservas.add(reserva);
-                      //Registrar en BD
-                     Connection conn = ConexionBD.conectar();
-                     String sql = "INSERT INTO reserva(cliente, fecha_ingreso, fecha_salida, habitacion, costo) VALUES (?, ?, ?, ?, ?)";
-                     //
-                     PreparedStatement ps = conn.prepareStatement(sql);
-                     //
-                     ps.setString(1, nombreCliente);
-                     // registro de fechas formato
-                     String ingresoBD = txtIngreso.getText();
-                     String[] f1 = ingresoBD.split("/");
-                     ingresoBD = f1[2] + "-" + f1[1] + "-" + f1[0];
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
+                }
+            }
+        });
 
-                     String salidaBD = txtFechaSalida.getText();
-                     String[] f2 = salidaBD.split("/");
-                     salidaBD = f2[2] + "-" + f2[1] + "-" + f2[0];
-                     //
-                     ps.setString(2, ingresoBD);
-                     ps.setString(3, salidaBD);
-                     ps.setInt(4, numHabitacion);
-                     ps.setDouble(5, costo);
+        // Botón Limpiar
+        btnLimpiar = new JButton("Limpiar");
+        btnLimpiar.setBackground(new java.awt.Color(108, 117, 125));
+        btnLimpiar.setForeground(java.awt.Color.WHITE);
+        btnLimpiar.setFocusPainted(false);
+        btnLimpiar.setBounds(250, 360, 130, 35);
+        contentPane.add(btnLimpiar);
+        btnLimpiar.addActionListener(e -> limpiarCampos());
 
-                     ps.executeUpdate();
-                     limpiarCampos();
-                     ps.close();
-                     conn.close();
-                     //
-                     
-                     modelo.addRow(new Object[]{
-                    		 idVisual,
-                     nombreCliente,
-                     ingreso,
-                     salida,
-                      numHabitacion,
-                      "S/ " + costo
-                          });
-
-				    //JOptionPane.showMessageDialog(null, "Reserva registrada correctamente");
-				    JOptionPane.showMessageDialog(
-				    	    null,
-				    	    "Reserva registrada correctamente\nCosto: S/ " + costo
-				    	);
-                 
-				} catch (Exception ex) {
-				    JOptionPane.showMessageDialog(null, "Error en los datos");
-				}
-
-				
-				
-				
-				
-				
-			}
-		});
-		btnRegistrar.setBounds(80, 360, 130, 35);
-		contentPane.add(btnRegistrar);
-		
-		btnLimpiar = new JButton("Limpiar");
-		//colores de botones
-		btnLimpiar.setBackground(new java.awt.Color(108, 117, 125));
-		btnLimpiar.setForeground(java.awt.Color.WHITE);
-		btnLimpiar.setFocusPainted(false);
-        //
-		btnLimpiar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				txtId.setText("");
-				txtIngreso.setText("");
-				txtFechaSalida.setText("");
-				txtCliente.setText("");
-				txtHabitacion.setText("");
-				txtId.setText(String.format("RES-%03d", contador));
-				
-				
-			}
-		});
-		btnLimpiar.setBounds(250, 360, 130, 35);
-		contentPane.add(btnLimpiar);
-		
-		
-		table = new JTable();
-		//table.setBounds(366, 145, 260, 184);
-		//contentPane.add(table);
-
+        // Tabla
+        table = new JTable();
         JScrollPane scroll = new JScrollPane(table);
         scroll.setBounds(430, 135, 500, 300);
         contentPane.add(scroll);
 
-        //jtable
+        modelo = new DefaultTableModel();
+        modelo.addColumn("ID");
+        modelo.addColumn("Cliente");
+        modelo.addColumn("Ingreso");
+        modelo.addColumn("Salida");
+        modelo.addColumn("Habitación");
+        modelo.addColumn("Costo");
+        table.setModel(modelo);
+        table.setRowHeight(28);
+        table.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        table.getColumnModel().getColumn(0).setPreferredWidth(60);
+        table.getColumnModel().getColumn(1).setPreferredWidth(160);
+        table.getColumnModel().getColumn(2).setPreferredWidth(90);
+        table.getColumnModel().getColumn(3).setPreferredWidth(90);
+        table.getColumnModel().getColumn(4).setPreferredWidth(80);
+        table.getColumnModel().getColumn(5).setPreferredWidth(80);
 
-         modelo = new DefaultTableModel();
+        // Botón Eliminar
+        btnEliminar = new JButton("Eliminar");
+        btnEliminar.setBackground(new java.awt.Color(220, 53, 69));
+        btnEliminar.setForeground(java.awt.Color.WHITE);
+        btnEliminar.setFocusPainted(false);
+        btnEliminar.setBounds(80, 430, 130, 35);
+        contentPane.add(btnEliminar);
 
-         modelo.addColumn("ID");
-         modelo.addColumn("Cliente");
-         modelo.addColumn("Ingreso");
-         modelo.addColumn("Salida");
-         modelo.addColumn("Habitación");
-         modelo.addColumn("Costo");
-         table.setModel(modelo);
-         //tamaño para mostrar a los clientes
-         table.setRowHeight(28);
-         table.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-         table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
-
-         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-         
-         btnEliminar = new JButton("Eliminar");
-         //colores
-         btnEliminar.setBackground(new java.awt.Color(220, 53, 69));
-         btnEliminar.setForeground(java.awt.Color.WHITE);
-         btnEliminar.setFocusPainted(false);
-
-         btnEliminar.addActionListener(new ActionListener() {
-         	public void actionPerformed(ActionEvent e) {
-         		
-         		int fila = table.getSelectedRow();
-
+        btnEliminar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int fila = table.getSelectedRow();
                 if (fila >= 0) {
-
-                    int confirm = JOptionPane.showConfirmDialog(
-                            null,
-                            "¿Eliminar reserva?");
-
+                    int confirm = JOptionPane.showConfirmDialog(null, "¿Eliminar reserva?");
                     if (confirm == JOptionPane.YES_OPTION) {
-
-                        //String cliente = modelo.getValueAt(fila, 1).toString();
-                    	String idTexto = txtId.getText().replace("RES-", "");
-                    	int idBD = Integer.parseInt(idTexto);
-                               
                         try {
-
+                            String idTexto = modelo.getValueAt(fila, 0).toString().replace("RES-", "");
+                            int idBD = Integer.parseInt(idTexto);
                             Connection conn = ConexionBD.conectar();
-
-                            String sql = "DELETE FROM reserva WHERE id=?";
-
-                            PreparedStatement ps = conn.prepareStatement(sql);
-
-                            //ps.setString(1, cliente);
+                            PreparedStatement ps = conn.prepareStatement("DELETE FROM reserva WHERE id=?");
                             ps.setInt(1, idBD);
-
                             ps.executeUpdate();
                             ps.close();
                             conn.close();
-
                             modelo.removeRow(fila);
-                            //listaReservas.remove(fila);
-
                             JOptionPane.showMessageDialog(null, "Reserva eliminada");
                             limpiarCampos();
-
                         } catch (Exception ex) {
-
-                            JOptionPane.showMessageDialog(null, "Error al eliminar en la BD");
-
+                            JOptionPane.showMessageDialog(null, "Error al eliminar: " + ex.getMessage());
                         }
                     }
-
                 } else {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila");
                 }
             }
         });
-         btnEliminar.setBounds(80, 430, 130, 35);
-         contentPane.add(btnEliminar);
-         
-         btnModificar = new JButton("Modificar");
-         //colores de botones
-         btnModificar.setBackground(new java.awt.Color(40, 167, 69));
-         btnModificar.setForeground(java.awt.Color.WHITE);
-         btnModificar.setFocusPainted(false);
-         //
-         btnModificar.addActionListener(new ActionListener() {
-         	public void actionPerformed(ActionEvent e) {
-         		 int fila = table.getSelectedRow();
 
-                 if (fila >= 0) {
-                	// validaciones
-                	 
-                	 if (!txtCliente.getText().matches("[a-zA-Z ]+")) {
-                		    JOptionPane.showMessageDialog(null, "El nombre solo debe contener letras");
-                		    return;
-                		}
+        // Botón Modificar
+        btnModificar = new JButton("Modificar");
+        btnModificar.setBackground(new java.awt.Color(40, 167, 69));
+        btnModificar.setForeground(java.awt.Color.WHITE);
+        btnModificar.setFocusPainted(false);
+        btnModificar.setBounds(250, 430, 130, 35);
+        contentPane.add(btnModificar);
 
-                		if (!txtHabitacion.getText().matches("\\d+")) {
-                		    JOptionPane.showMessageDialog(null, "La habitación debe contener solo números");
-                		    return;
-                		}
+        btnModificar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int fila = table.getSelectedRow();
+                if (fila < 0) { JOptionPane.showMessageDialog(null, "Seleccione una reserva"); return; }
 
-                		if (!txtIngreso.getText().matches("\\d{2}/\\d{2}/\\d{4}")) {
-                		    JOptionPane.showMessageDialog(null, "Formato fecha ingreso: dd/MM/yyyy");
-                		    return;
-                		}
+                if (!txtHabitacion.getText().matches("\\d+")) {
+                    JOptionPane.showMessageDialog(null, "La habitación debe contener solo números"); return;
+                }
+                if (txtIngreso.getDate() == null) {
+                    JOptionPane.showMessageDialog(null, "Seleccione fecha de ingreso"); return;
+                }
+                if (txtFechaSalida.getDate() == null) {
+                    JOptionPane.showMessageDialog(null, "Seleccione fecha de salida"); return;
+                }
 
-                		if (!txtFechaSalida.getText().matches("\\d{2}/\\d{2}/\\d{4}")) {
-                		    JOptionPane.showMessageDialog(null, "Formato fecha salida: dd/MM/yyyy");
-                		    return;
-                		}
-                		//comparación de fechas
-                		try {
+                Date fechaIngreso = txtIngreso.getDate();
+                Date fechaSalida  = txtFechaSalida.getDate();
 
-                		    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                		    sdf.setLenient(false);
+                if (!fechaSalida.after(fechaIngreso)) {
+                    JOptionPane.showMessageDialog(null, "La fecha de salida debe ser posterior a la de ingreso"); return;
+                }
 
-                		    Date fechaIngreso = sdf.parse(txtIngreso.getText());
-                		    Date fechaSalida = sdf.parse(txtFechaSalida.getText());
+                SimpleDateFormat sdf   = new SimpleDateFormat("dd/MM/yyyy");
+                SimpleDateFormat sdfBD = new SimpleDateFormat("yyyy-MM-dd");
+                String ingreso   = sdf.format(fechaIngreso);
+                String salida    = sdf.format(fechaSalida);
+                String ingresoBD = sdfBD.format(fechaIngreso);
+                String salidaBD  = sdfBD.format(fechaSalida);
 
-                		    if (fechaSalida.before(fechaIngreso)) {
-                		        JOptionPane.showMessageDialog(
-                		                null,
-                		                "La fecha de salida debe ser posterior a la fecha de ingreso");
-                		        return;
-                		    }
+                double costo;
+                try {
+                    costo = Double.parseDouble(txtCosto.getText().trim());
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "El costo debe ser un número válido"); return;
+                }
 
-                		} catch (Exception ex) {
-                		    JOptionPane.showMessageDialog(null, "Error en el formato de fecha");
-                		    return;
-                		}
-                		
-                		
-                		// costo modificar
-                		double costo = 0;
+                modelo.setValueAt(txtCliente.getText(), fila, 1);
+                modelo.setValueAt(ingreso, fila, 2);
+                modelo.setValueAt(salida,  fila, 3);
+                modelo.setValueAt(txtHabitacion.getText(), fila, 4);
+                modelo.setValueAt("S/ " + costo, fila, 5);
 
-                		try {
-                		    Cliente cliente = new Cliente(
-                		            txtCliente.getText(),
-                		            "correo@test.com",
-                		            "123",
-                		            "00000000");
+                try {
+                    String idTexto = modelo.getValueAt(fila, 0).toString().replace("RES-", "");
+                    int idBD = Integer.parseInt(idTexto);
+                    Connection conn = ConexionBD.conectar();
+                    String sql = "UPDATE reserva SET cliente=?, fecha_ingreso=?, fecha_salida=?, habitacion=?, costo=? WHERE id=?";
+                    PreparedStatement ps = conn.prepareStatement(sql);
+                    ps.setString(1, txtCliente.getText());
+                    ps.setString(2, ingresoBD);
+                    ps.setString(3, salidaBD);
+                    ps.setInt(4, Integer.parseInt(txtHabitacion.getText()));
+                    ps.setDouble(5, costo);
+                    ps.setInt(6, idBD);
+                    ps.executeUpdate();
+                    ps.close();
+                    conn.close();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error al modificar: " + ex.getMessage()); return;
+                }
 
-                		    Habitacion habitacion = new Habitacion(
-                		            Integer.parseInt(txtHabitacion.getText()),
-                		            "Simple",
-                		            70);
+                JOptionPane.showMessageDialog(null, "Reserva actualizada");
+                limpiarCampos();
+            }
+        });
 
-                		    Reserva reserva = new Reserva(
-                		            1,
-                		            cliente,
-                		            txtIngreso.getText(),
-                		            txtFechaSalida.getText());
+        // Click en tabla → cargar fila
+        table.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                int fila = table.getSelectedRow();
+                if (fila >= 0) {
+                    txtId.setText(modelo.getValueAt(fila, 0).toString());
+                    txtCliente.setText(modelo.getValueAt(fila, 1).toString());
 
-                		    reserva.asignarHabitacion(habitacion);
+                    try {
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                        txtIngreso.setDate(sdf.parse(modelo.getValueAt(fila, 2).toString()));
+                        txtFechaSalida.setDate(sdf.parse(modelo.getValueAt(fila, 3).toString()));
+                    } catch (Exception ex) { ex.printStackTrace(); }
 
-                		    costo = reserva.calcularCosto();
-                		    txtCosto.setText("S/ " + costo);
+                    txtHabitacion.setText(modelo.getValueAt(fila, 4).toString());
+                    txtCosto.setText(modelo.getValueAt(fila, 5).toString());
+                }
+            }
+        });
 
-                		} catch (Exception ex) {
-                		    JOptionPane.showMessageDialog(null, "Error al recalcular costo");
-                		    return;
-                		}
-                		//
-                     modelo.setValueAt(txtCliente.getText(), fila, 1);
-                     modelo.setValueAt(txtIngreso.getText(), fila, 2);
-                     modelo.setValueAt(txtFechaSalida.getText(), fila, 3);
-                     modelo.setValueAt(txtHabitacion.getText(), fila, 4);
-                     modelo.setValueAt("S/ " + costo, fila, 5);
-                     //Mofifica en la BD
-                     try {
-
-                    	    Connection conn = ConexionBD.conectar();
-
-                    	    // Obtener el ID visual: RES-012 -> 12
-                    	    String idTexto = txtId.getText().replace("RES-", "");
-                    	    int idBD = Integer.parseInt(idTexto);
-
-                    	    //String sql = "UPDATE reserva SET cliente=?, habitacion=?, costo=? WHERE id=?";
-                    	    String sql = "UPDATE reserva SET cliente=?, fecha_ingreso=?, fecha_salida=?, habitacion=?, costo=? WHERE id=?";
-
-                    	    PreparedStatement ps = conn.prepareStatement(sql);
-                    	 // convertir fechas para MySQL
-                    	    String ingresoBD = txtIngreso.getText();
-                    	    String[] f1 = ingresoBD.split("/");
-                    	    ingresoBD = f1[2] + "-" + f1[1] + "-" + f1[0];
-
-                    	    String salidaBD = txtFechaSalida.getText();
-                    	    String[] f2 = salidaBD.split("/");
-                    	    salidaBD = f2[2] + "-" + f2[1] + "-" + f2[0];
-                    	    //
-                    	    //ps.setString(1, txtCliente.getText());
-                    	    //ps.setInt(2, Integer.parseInt(txtHabitacion.getText()));
-                    	    //ps.setDouble(3, costo);
-                    	    //ps.setInt(4, idBD);
-                    	    //modificación bd
-                    	    ps.setString(1, txtCliente.getText());
-                    	    ps.setString(2, ingresoBD);
-                    	    ps.setString(3, salidaBD);
-                    	    ps.setInt(4, Integer.parseInt(txtHabitacion.getText()));
-                    	    ps.setDouble(5, costo);
-                    	    ps.setInt(6, idBD);
-
-                    	    int filas = ps.executeUpdate();
-                    	    ps.close();
-                    	    conn.close();
-
-                    	    System.out.println("Filas actualizadas: " + filas);
-
-                    	} catch (Exception ex) {
-
-                    	    ex.printStackTrace();
-                    	    JOptionPane.showMessageDialog(null, ex.getMessage());
-                    	}                   
-                     //
-                     JOptionPane.showMessageDialog(null, "Reserva actualizada");
-                     limpiarCampos();
-
-                 } else {
-
-                     JOptionPane.showMessageDialog(null, "Seleccione una reserva");
-                 }
-         		
-         		
-         	}
-         });
-         btnModificar.setBounds(250, 430, 130, 35);
-         contentPane.add(btnModificar);
-         
-         txtCosto = new JTextField();
-         txtCosto.setBounds(260, 260, 120, 25);
-         contentPane.add(txtCosto);
-         txtCosto.setColumns(10);
-         
-         JLabel lblNewLabel_4_1 = new JLabel("Costo");
-         lblNewLabel_4_1.setFont(new Font("Tahoma", Font.BOLD, 12));
-         lblNewLabel_4_1.setBounds(127, 263, 64, 13);
-         contentPane.add(lblNewLabel_4_1);
-
-         table.getColumnModel().getColumn(0).setPreferredWidth(50);  // ID
-         table.getColumnModel().getColumn(1).setPreferredWidth(180); // Cliente
-         table.getColumnModel().getColumn(2).setPreferredWidth(100); // Ingreso
-         table.getColumnModel().getColumn(3).setPreferredWidth(100); // Salida
-         table.getColumnModel().getColumn(4).setPreferredWidth(100); // Habitación
-            //Cargar datos en el formulario
-         
-         table.addMouseListener(new java.awt.event.MouseAdapter() {
-        	    public void mouseClicked(java.awt.event.MouseEvent e) {
-
-        	        int fila = table.getSelectedRow();
-
-        	        if (fila >= 0) {
-        	        	txtId.setText(modelo.getValueAt(fila, 0).toString());
-        	            txtCliente.setText(modelo.getValueAt(fila, 1).toString());
-        	            txtIngreso.setText(modelo.getValueAt(fila, 2).toString());
-        	            txtFechaSalida.setText(modelo.getValueAt(fila, 3).toString());
-        	            txtHabitacion.setText(modelo.getValueAt(fila, 4).toString());
-        	            txtCosto.setText(modelo.getValueAt(fila, 5).toString());
-        	        }
-        	    }   
-         
-        	});
-         cargarReservas();
-         //limpiar todo
-         
-         
-	}
-	// ← aquí termina el MouseListener
-    private int obtenerSiguienteId() {
-
-   	    try {
-
-   	        Connection conn = ConexionBD.conectar();
-
-   	        String sql = "SELECT MAX(id) FROM reserva";
-
-   	        PreparedStatement ps = conn.prepareStatement(sql);
-
-   	        ResultSet rs = ps.executeQuery();
-
-   	           int siguienteId = 1;
-               if (rs.next()) {
-               siguienteId = rs.getInt(1) + 1;
-               }
-               // cerrar conexiones
-               rs.close();
-               ps.close();
-               conn.close();
-
-               return siguienteId;
-
-   	           } catch (Exception e) {
-   	            e.printStackTrace();
-   	           }        	    
-   	    return 1;
+        cargarReservas();
     }
-    
-    private void cargarReservas() {
 
+    private int obtenerSiguienteId() {
         try {
-
             Connection conn = ConexionBD.conectar();
-
-            String sql = "SELECT * FROM reserva";
-
-            PreparedStatement ps = conn.prepareStatement(sql);
-
+            PreparedStatement ps = conn.prepareStatement("SELECT MAX(id) FROM reserva");
             ResultSet rs = ps.executeQuery();
+            int siguiente = 1;
+            if (rs.next()) siguiente = rs.getInt(1) + 1;
+            rs.close(); ps.close(); conn.close();
+            return siguiente;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 1;
+    }
 
+    private void cargarReservas() {
+        try {
+            Connection conn = ConexionBD.conectar();
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM reserva");
+            ResultSet rs = ps.executeQuery();
             modelo.setRowCount(0);
-
             while (rs.next()) {
-
                 String ingreso = rs.getString("fecha_ingreso");
                 String[] f1 = ingreso.split("-");
                 ingreso = f1[2] + "/" + f1[1] + "/" + f1[0];
-
                 String salida = rs.getString("fecha_salida");
                 String[] f2 = salida.split("-");
                 salida = f2[2] + "/" + f2[1] + "/" + f2[0];
-
                 modelo.addRow(new Object[]{
-
                     "RES-" + String.format("%03d", rs.getInt("id")),
-                    rs.getString("cliente"),
-                    ingreso,
-                    salida,
-                    rs.getInt("habitacion"),
-                    "S/ " + rs.getDouble("costo")
-
+                    rs.getString("cliente"), ingreso, salida,
+                    rs.getInt("habitacion"), "S/ " + rs.getDouble("costo")
                 });
             }
-            //Cerrar conexiones
-            rs.close();
-            ps.close();
-            conn.close();
-
+            rs.close(); ps.close(); conn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     private void limpiarCampos() {
-    	txtId.setText("");
-        txtIngreso.setText("");
-        txtFechaSalida.setText("");
-        txtCliente.setText("");
+        txtIngreso.setDate(null);
+        txtFechaSalida.setDate(null);
         txtHabitacion.setText("");
         txtCosto.setText("");
-
+        txtCliente.setText(clienteLogueado);
         contador = obtenerSiguienteId();
         txtId.setText(String.format("RES-%03d", contador));
     }
