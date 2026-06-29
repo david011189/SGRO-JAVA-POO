@@ -162,7 +162,7 @@ public class FrmReserva extends JFrame {
     // ---------------------------------------------------------------
     private JScrollPane panelTabla() {
         modelo = new DefaultTableModel(
-                new String[]{"N° Reserva","Cliente","Ingreso","Salida","Días","Habitación","Costo","Método pago","Estado"}, 0) {
+                new String[]{"N° Reserva","Cliente","Ingreso","Salida","Días","Habitación","Total pagado","Método pago","Estado"}, 0) {
             @Override public boolean isCellEditable(int r, int c) { return false; }
         };
         tabla = new JTable(modelo);
