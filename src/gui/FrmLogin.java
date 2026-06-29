@@ -64,23 +64,44 @@ public class FrmLogin extends JFrame {
     private JPanel panelFormulario() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(), "Credenciales",
-                TitledBorder.LEFT, TitledBorder.TOP));
+                BorderFactory.createEtchedBorder(),
+                "Credenciales",
+                TitledBorder.LEFT,
+                TitledBorder.TOP));
 
-        GridBagConstraints lbl = new GridBagConstraints();
-        lbl.insets  = new Insets(10, 10, 10, 6);
-        lbl.anchor  = GridBagConstraints.EAST;
+        // Label Correo
+        GridBagConstraints lblCorreo = new GridBagConstraints();
+        lblCorreo.insets = new Insets(10, 10, 10, 6);
+        lblCorreo.anchor = GridBagConstraints.EAST;
+        lblCorreo.gridx = 0;
+        lblCorreo.gridy = 0;
+        panel.add(new JLabel("Correo:"), lblCorreo);
 
-        GridBagConstraints fld = new GridBagConstraints();
-        fld.insets  = new Insets(10, 0, 10, 10);
-        fld.fill    = GridBagConstraints.HORIZONTAL;
-        fld.weightx = 1.0;
+        // Campo Correo
+        GridBagConstraints fldCorreo = new GridBagConstraints();
+        fldCorreo.insets = new Insets(10, 0, 10, 10);
+        fldCorreo.fill = GridBagConstraints.HORIZONTAL;
+        fldCorreo.weightx = 1.0;
+        fldCorreo.gridx = 1;
+        fldCorreo.gridy = 0;
+        panel.add(txtCorreo, fldCorreo);
 
-        lbl.gridx = 0; lbl.gridy = 0; panel.add(new JLabel("Correo:"), lbl);
-        fld.gridx = 1; fld.gridy = 0; panel.add(txtCorreo, fld);
+        // Label Password
+        GridBagConstraints lblPassword = new GridBagConstraints();
+        lblPassword.insets = new Insets(10, 10, 10, 6);
+        lblPassword.anchor = GridBagConstraints.EAST;
+        lblPassword.gridx = 0;
+        lblPassword.gridy = 1;
+        panel.add(new JLabel("Password:"), lblPassword);
 
-        lbl.gridx = 0; lbl.gridy = 1; panel.add(new JLabel("Password:"), lbl);
-        fld.gridx = 1; fld.gridy = 1; panel.add(txtPassword, fld);
+        // Campo Password
+        GridBagConstraints fldPassword = new GridBagConstraints();
+        fldPassword.insets = new Insets(10, 0, 10, 10);
+        fldPassword.fill = GridBagConstraints.HORIZONTAL;
+        fldPassword.weightx = 1.0;
+        fldPassword.gridx = 1;
+        fldPassword.gridy = 1;
+        panel.add(txtPassword, fldPassword);
 
         return panel;
     }

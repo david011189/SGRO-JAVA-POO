@@ -8,7 +8,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.*;
+//import java.awt.event.*;
 
 public class FrmMantenimientoClientes extends JFrame {
 
@@ -80,33 +80,90 @@ public class FrmMantenimientoClientes extends JFrame {
 
     // ---------------------------------------------------------------
     private JPanel panelFormulario() {
+
         JPanel panel = new JPanel(new GridBagLayout());
+
         panel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(), "Datos del Cliente",
-                TitledBorder.LEFT, TitledBorder.TOP));
+                BorderFactory.createEtchedBorder(),
+                "Datos del Cliente",
+                TitledBorder.LEFT,
+                TitledBorder.TOP));
 
-        GridBagConstraints lbl = new GridBagConstraints();
-        lbl.insets  = new Insets(8, 10, 8, 4);
-        lbl.anchor  = GridBagConstraints.EAST;
+        // =========================
+        // Etiqueta DNI
+        // =========================
+        GridBagConstraints lblDni = new GridBagConstraints();
+        lblDni.insets = new Insets(8, 10, 8, 4);
+        lblDni.anchor = GridBagConstraints.EAST;
+        lblDni.gridx = 0;
+        lblDni.gridy = 0;
+        panel.add(new JLabel("DNI:"), lblDni);
 
-        GridBagConstraints fld = new GridBagConstraints();
-        fld.insets  = new Insets(8, 0, 8, 10);
-        fld.fill    = GridBagConstraints.HORIZONTAL;
-        fld.weightx = 1.0;
+        // Campo DNI
+        GridBagConstraints fldDni = new GridBagConstraints();
+        fldDni.insets = new Insets(8, 0, 8, 10);
+        fldDni.fill = GridBagConstraints.HORIZONTAL;
+        fldDni.weightx = 1.0;
+        fldDni.gridx = 1;
+        fldDni.gridy = 0;
+        panel.add(txtDni, fldDni);
 
-        // Fila 0
-        lbl.gridx = 0; lbl.gridy = 0; panel.add(new JLabel("DNI:"), lbl);
-        fld.gridx = 1; fld.gridy = 0; panel.add(txtDni, fld);
+        // =========================
+        // Etiqueta Nombre
+        // =========================
+        GridBagConstraints lblNombre = new GridBagConstraints();
+        lblNombre.insets = new Insets(8, 10, 8, 4);
+        lblNombre.anchor = GridBagConstraints.EAST;
+        lblNombre.gridx = 2;
+        lblNombre.gridy = 0;
+        panel.add(new JLabel("Nombre:"), lblNombre);
 
-        lbl.gridx = 2; panel.add(new JLabel("Nombre:"), lbl);
-        fld.gridx = 3; panel.add(txtNombre, fld);
+        // Campo Nombre
+        GridBagConstraints fldNombre = new GridBagConstraints();
+        fldNombre.insets = new Insets(8, 0, 8, 10);
+        fldNombre.fill = GridBagConstraints.HORIZONTAL;
+        fldNombre.weightx = 1.0;
+        fldNombre.gridx = 3;
+        fldNombre.gridy = 0;
+        panel.add(txtNombre, fldNombre);
 
-        // Fila 1
-        lbl.gridx = 0; lbl.gridy = 1; panel.add(new JLabel("Correo:"), lbl);
-        fld.gridx = 1; fld.gridy = 1; panel.add(txtCorreo, fld);
+        // =========================
+        // Etiqueta Correo
+        // =========================
+        GridBagConstraints lblCorreo = new GridBagConstraints();
+        lblCorreo.insets = new Insets(8, 10, 8, 4);
+        lblCorreo.anchor = GridBagConstraints.EAST;
+        lblCorreo.gridx = 0;
+        lblCorreo.gridy = 1;
+        panel.add(new JLabel("Correo:"), lblCorreo);
 
-        lbl.gridx = 2; panel.add(new JLabel("Password:"), lbl);
-        fld.gridx = 3; panel.add(txtPassword, fld);
+        // Campo Correo
+        GridBagConstraints fldCorreo = new GridBagConstraints();
+        fldCorreo.insets = new Insets(8, 0, 8, 10);
+        fldCorreo.fill = GridBagConstraints.HORIZONTAL;
+        fldCorreo.weightx = 1.0;
+        fldCorreo.gridx = 1;
+        fldCorreo.gridy = 1;
+        panel.add(txtCorreo, fldCorreo);
+
+        // =========================
+        // Etiqueta Password
+        // =========================
+        GridBagConstraints lblPassword = new GridBagConstraints();
+        lblPassword.insets = new Insets(8, 10, 8, 4);
+        lblPassword.anchor = GridBagConstraints.EAST;
+        lblPassword.gridx = 2;
+        lblPassword.gridy = 1;
+        panel.add(new JLabel("Password:"), lblPassword);
+
+        // Campo Password
+        GridBagConstraints fldPassword = new GridBagConstraints();
+        fldPassword.insets = new Insets(8, 0, 8, 10);
+        fldPassword.fill = GridBagConstraints.HORIZONTAL;
+        fldPassword.weightx = 1.0;
+        fldPassword.gridx = 3;
+        fldPassword.gridy = 1;
+        panel.add(txtPassword, fldPassword);
 
         return panel;
     }
