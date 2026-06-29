@@ -28,6 +28,7 @@ public class FrmReserva extends JFrame {
     private JTextField   txtDias        = new JTextField();
     private JTextField   txtCliente     = new JTextField();
     private JTextField   txtHabitacion  = new JTextField();
+    private JTextField   txtTarifaHabitacion = new JTextField();
     private JTextField   txtCosto       = new JTextField();
     private JTextField   txtMetodoPago  = new JTextField();
     private JComboBox<String> cmbEstado = new JComboBox<>(new String[]{"confirmada","en_curso","completada","cancelada"});
@@ -120,7 +121,8 @@ public class FrmReserva extends JFrame {
             {"Días:",          txtDias},
             {"Cliente:",       txtCliente},
             {"Habitación:",    txtHabitacion},
-            {"Costo (S/):",    txtCosto},
+            {"Tarifa por día:", txtTarifaHabitacion},
+            {"Total pagado (S/):", txtCosto},
             {"Método pago:",   txtMetodoPago},
             {"Estado:",        cmbEstado},
         };
@@ -216,7 +218,7 @@ public class FrmReserva extends JFrame {
             if (!e.getValueIsAdjusting()) cargarFila();
         });
 
-        // Calcular días al cambiar fechas
+        // Calcular días y recalcular costo al cambiar fechas
         java.beans.PropertyChangeListener calcDias = evt -> {
             Date fi = dtIngreso.getDate();
             Date fs = dtSalida.getDate();
@@ -226,9 +228,17 @@ public class FrmReserva extends JFrame {
             } else {
                 txtDias.setText("");
             }
+            recalcularCosto();
         };
         dtIngreso.addPropertyChangeListener("date", calcDias);
         dtSalida.addPropertyChangeListener("date", calcDias);
+
+        // Consultar tarifa al cambiar de habitación
+        txtHabitacion.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override public void focusLost(java.awt.event.FocusEvent e) {
+                consultarTarifa();
+            }
+        });
 
         btnModificar.addActionListener(e -> modificar());
         btnEliminar.addActionListener(e -> eliminar());
@@ -252,12 +262,56 @@ public class FrmReserva extends JFrame {
         } catch (Exception ex) { ex.printStackTrace(); }
         txtDias.setText(modelo.getValueAt(fila, 4).toString());
         txtHabitacion.setText(modelo.getValueAt(fila, 5).toString());
-        txtCosto.setText(modelo.getValueAt(fila, 6).toString().replace("S/ ", ""));
         txtMetodoPago.setText(modelo.getValueAt(fila, 7).toString());
         cmbEstado.setSelectedItem(modelo.getValueAt(fila, 8).toString());
 
         habilitarCampos(true);
         actualizarBotones(true);
+        consultarTarifa();
+    }
+
+    // Busca la tarifa de la habitación en BD y recalcula el costo
+    private void consultarTarifa() {
+        String numStr = txtHabitacion.getText().trim();
+        if (numStr.isEmpty()) {
+            txtTarifaHabitacion.setText("");
+            recalcularCosto();
+            return;
+        }
+        int numero;
+        try { numero = Integer.parseInt(numStr); }
+        catch (NumberFormatException ex) {
+            txtTarifaHabitacion.setText("");
+            recalcularCosto();
+            return;
+        }
+
+        String sql = "SELECT tarifa FROM habitaciones WHERE numero=?";
+        try (Connection con = ConexionBD.conectar();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, numero);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                txtTarifaHabitacion.setText(String.format("%.2f", rs.getDouble("tarifa")));
+            } else {
+                txtTarifaHabitacion.setText("");
+                error("No existe la habitación N° " + numero + ".");
+            }
+        } catch (Exception ex) {
+            error("Error al consultar tarifa: " + ex.getMessage());
+        }
+        recalcularCosto();
+    }
+
+    // Recalcula el total pagado = tarifa por día × días
+    private void recalcularCosto() {
+        try {
+            double tarifa = Double.parseDouble(txtTarifaHabitacion.getText().trim());
+            int dias = Integer.parseInt(txtDias.getText().trim());
+            txtCosto.setText(String.format("%.2f", tarifa * dias));
+        } catch (NumberFormatException ex) {
+            txtCosto.setText("");
+        }
     }
 
     private void modificar() {
@@ -313,7 +367,8 @@ public class FrmReserva extends JFrame {
 
     private void limpiar() {
         txtId.setText(""); txtCliente.setText(""); txtDias.setText("");
-        txtHabitacion.setText(""); txtCosto.setText(""); txtMetodoPago.setText("");
+        txtHabitacion.setText(""); txtTarifaHabitacion.setText("");
+        txtCosto.setText(""); txtMetodoPago.setText("");
         dtIngreso.setDate(null); dtSalida.setDate(null);
         cmbEstado.setSelectedIndex(0);
         idSeleccionado = -1;
@@ -350,11 +405,11 @@ public class FrmReserva extends JFrame {
     // ---------------------------------------------------------------
     private void habilitarCampos(boolean on) {
         Color bg = on ? Color.WHITE : new Color(235, 235, 235);
-        for (JTextField f : new JTextField[]{txtCliente, txtHabitacion, txtCosto}) {
+        for (JTextField f : new JTextField[]{txtCliente, txtHabitacion}) {
             f.setEditable(on); f.setBackground(bg);
         }
-        // txtId, txtDias, txtMetodoPago: siempre solo lectura
-        for (JTextField f : new JTextField[]{txtId, txtDias, txtMetodoPago}) {
+        // txtId, txtDias, txtMetodoPago, txtTarifaHabitacion, txtCosto: siempre solo lectura (calculados)
+        for (JTextField f : new JTextField[]{txtId, txtDias, txtMetodoPago, txtTarifaHabitacion, txtCosto}) {
             f.setEditable(false);
             f.setBackground(new Color(235, 235, 235));
         }
