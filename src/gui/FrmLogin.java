@@ -34,13 +34,12 @@ public class FrmLogin extends JFrame {
         root.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
         setContentPane(root);
 
-        root.add(panelTitulo(),    BorderLayout.NORTH);
+        root.add(panelTitulo(),     BorderLayout.NORTH);
         root.add(panelFormulario(), BorderLayout.CENTER);
-        root.add(panelBotones(),   BorderLayout.SOUTH);
+        root.add(panelBotones(),    BorderLayout.SOUTH);
 
         configurarEventos();
 
-        // Enter en cualquier campo dispara el login
         KeyAdapter enterLogin = new KeyAdapter() {
             @Override public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) iniciarSesion();
@@ -53,60 +52,37 @@ public class FrmLogin extends JFrame {
     // ---------------------------------------------------------------
     private JPanel panelTitulo() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel lblTitulo = new JLabel("Sistema de Gestión de Reservas");
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        lblTitulo.setForeground(new Color(0, 51, 102));
-        panel.add(lblTitulo);
+        JLabel lbl = new JLabel("Sistema de Gestión de Reservas");
+        lbl.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lbl.setForeground(new Color(0, 51, 102));
+        panel.add(lbl);
         return panel;
     }
 
-    // ---------------------------------------------------------------
     private JPanel panelFormulario() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(),
-                "Credenciales",
-                TitledBorder.LEFT,
-                TitledBorder.TOP));
+                BorderFactory.createEtchedBorder(), "Credenciales",
+                TitledBorder.LEFT, TitledBorder.TOP));
 
-        // Label Correo
-        GridBagConstraints lblCorreo = new GridBagConstraints();
-        lblCorreo.insets = new Insets(10, 10, 10, 6);
-        lblCorreo.anchor = GridBagConstraints.EAST;
-        lblCorreo.gridx = 0;
-        lblCorreo.gridy = 0;
-        panel.add(new JLabel("Correo:"), lblCorreo);
+        GridBagConstraints lbl = new GridBagConstraints();
+        lbl.insets = new Insets(10, 10, 10, 6);
+        lbl.anchor = GridBagConstraints.EAST;
 
-        // Campo Correo
-        GridBagConstraints fldCorreo = new GridBagConstraints();
-        fldCorreo.insets = new Insets(10, 0, 10, 10);
-        fldCorreo.fill = GridBagConstraints.HORIZONTAL;
-        fldCorreo.weightx = 1.0;
-        fldCorreo.gridx = 1;
-        fldCorreo.gridy = 0;
-        panel.add(txtCorreo, fldCorreo);
+        GridBagConstraints fld = new GridBagConstraints();
+        fld.insets  = new Insets(10, 0, 10, 10);
+        fld.fill    = GridBagConstraints.HORIZONTAL;
+        fld.weightx = 1.0;
 
-        // Label Password
-        GridBagConstraints lblPassword = new GridBagConstraints();
-        lblPassword.insets = new Insets(10, 10, 10, 6);
-        lblPassword.anchor = GridBagConstraints.EAST;
-        lblPassword.gridx = 0;
-        lblPassword.gridy = 1;
-        panel.add(new JLabel("Password:"), lblPassword);
+        lbl.gridx = 0; lbl.gridy = 0; panel.add(new JLabel("Correo:"), lbl);
+        fld.gridx = 1; fld.gridy = 0; panel.add(txtCorreo, fld);
 
-        // Campo Password
-        GridBagConstraints fldPassword = new GridBagConstraints();
-        fldPassword.insets = new Insets(10, 0, 10, 10);
-        fldPassword.fill = GridBagConstraints.HORIZONTAL;
-        fldPassword.weightx = 1.0;
-        fldPassword.gridx = 1;
-        fldPassword.gridy = 1;
-        panel.add(txtPassword, fldPassword);
+        lbl.gridx = 0; lbl.gridy = 1; panel.add(new JLabel("Password:"), lbl);
+        fld.gridx = 1; fld.gridy = 1; panel.add(txtPassword, fld);
 
         return panel;
     }
 
-    // ---------------------------------------------------------------
     private JPanel panelBotones() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
 
@@ -131,22 +107,19 @@ public class FrmLogin extends JFrame {
         btnCancelar.addActionListener(e -> System.exit(0));
     }
 
-    // ---------------------------------------------------------------
     private void iniciarSesion() {
         String correo   = txtCorreo.getText().trim();
         String password = new String(txtPassword.getPassword()).trim();
 
-        if (correo.isEmpty()) {
-            mostrarError("Ingrese su correo."); txtCorreo.requestFocusInWindow(); return;
-        }
-        if (password.isEmpty()) {
-            mostrarError("Ingrese su contraseña."); txtPassword.requestFocusInWindow(); return;
-        }
+        if (correo.isEmpty())   { mostrarError("Ingrese su correo.");     txtCorreo.requestFocusInWindow();   return; }
+        if (password.isEmpty()) { mostrarError("Ingrese su contraseña."); txtPassword.requestFocusInWindow(); return; }
 
-        String nombreCliente = validarCredenciales(correo, password);
-        if (nombreCliente != null) {
+        String[] resultado = validarCredenciales(correo, password);
+        if (resultado != null) {
+            String nombre = resultado[0];
+            String rol    = resultado[1];
             dispose();
-            new FrmMenuPrincipal(nombreCliente).setVisible(true);
+            new FrmMenuPrincipal(nombre, rol).setVisible(true);
         } else {
             mostrarError("Correo o contraseña incorrectos.");
             txtPassword.setText("");
@@ -154,16 +127,15 @@ public class FrmLogin extends JFrame {
         }
     }
 
-    // ---------------------------------------------------------------
-    // Retorna el nombre del cliente si las credenciales son válidas, o null si no
-    private String validarCredenciales(String correo, String password) {
-        String sql = "SELECT nombre FROM clientes WHERE correo = ? AND password = ?";
+    // Retorna [nombre, rol] o null si las credenciales no son válidas
+    private String[] validarCredenciales(String correo, String password) {
+        String sql = "SELECT nombre, rol FROM clientes WHERE correo = ? AND password = ?";
         try (Connection con = ConexionBD.conectar();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, correo);
             ps.setString(2, password);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) return rs.getString("nombre");
+            if (rs.next()) return new String[]{ rs.getString("nombre"), rs.getString("rol") };
             return null;
         } catch (Exception e) {
             mostrarError("Error de conexión: " + e.getMessage());
