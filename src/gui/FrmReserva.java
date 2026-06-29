@@ -30,7 +30,7 @@ public class FrmReserva extends JFrame {
     private JTextField   txtHabitacion  = new JTextField();
     private JTextField   txtCosto       = new JTextField();
     private JTextField   txtMetodoPago  = new JTextField();
-    private JComboBox<String> cmbEstado = new JComboBox<>(new String[]{"confirmada","cancelada"});
+    private JComboBox<String> cmbEstado = new JComboBox<>(new String[]{"confirmada","en_curso","completada","cancelada"});
 
     // Tabla
     private JTable            tabla;

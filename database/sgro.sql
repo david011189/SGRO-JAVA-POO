@@ -55,6 +55,7 @@ INSERT INTO habitaciones (numero, tipo, capacidad, descripcion, estado, tarifa) 
 -- ============================================================
 -- TABLA: reserva
 -- Registro de todas las reservas realizadas
+-- Estados: confirmada → en_curso → completada / cancelada
 -- ============================================================
 CREATE TABLE IF NOT EXISTS reserva (
     id             INT           AUTO_INCREMENT PRIMARY KEY,
@@ -65,8 +66,17 @@ CREATE TABLE IF NOT EXISTS reserva (
     costo          DECIMAL(10,2) NOT NULL,
     dias           INT           NOT NULL DEFAULT 1,
     metodo_pago    VARCHAR(30)   NOT NULL DEFAULT 'efectivo',
-    estado_reserva VARCHAR(20)   NOT NULL DEFAULT 'confirmada'
+    estado_reserva VARCHAR(20)   NOT NULL DEFAULT 'confirmada',
+    fecha_checkin  DATETIME      NULL,
+    fecha_checkout DATETIME      NULL
 );
+
+-- ============================================================
+-- NOTA PARA BASES DE DATOS EXISTENTES
+-- Si ya tienes la tabla reserva creada, ejecuta solo esto:
+--   ALTER TABLE reserva ADD COLUMN fecha_checkin  DATETIME NULL;
+--   ALTER TABLE reserva ADD COLUMN fecha_checkout DATETIME NULL;
+-- ============================================================
 
 -- ============================================================
 -- FIN DEL SCRIPT

@@ -96,6 +96,9 @@ public class FrmMenuPrincipal extends JFrame {
                 panel.add(boton("Hacer una Reserva",             new Color(40, 167, 69),
                         e -> new FrmCotizacion(nombre).setVisible(true)));
                 panel.add(Box.createVerticalStrut(8));
+                panel.add(boton("Recepción (Check-in / Check-out)", new Color(0, 150, 136),
+                        e -> new FrmRecepcion(nombre).setVisible(true)));
+                panel.add(Box.createVerticalStrut(8));
                 panel.add(boton("Ver todas las Reservas",        new Color(255, 140, 0),
                         e -> new FrmReserva(nombre).setVisible(true)));
                 break;
@@ -103,6 +106,9 @@ public class FrmMenuPrincipal extends JFrame {
             case "recepcionista":
                 panel.add(boton("Hacer una Reserva", new Color(40, 167, 69),
                         e -> new FrmCotizacion(nombre).setVisible(true)));
+                panel.add(Box.createVerticalStrut(8));
+                panel.add(boton("Recepción (Check-in / Check-out)", new Color(0, 150, 136),
+                        e -> new FrmRecepcion(nombre).setVisible(true)));
                 panel.add(Box.createVerticalStrut(8));
                 panel.add(boton("Ver todas las Reservas", new Color(255, 140, 0),
                         e -> new FrmReserva(nombre).setVisible(true)));
