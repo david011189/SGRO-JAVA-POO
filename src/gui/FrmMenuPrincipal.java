@@ -90,6 +90,9 @@ public class FrmMenuPrincipal extends JFrame {
                 panel.add(boton("Mantenimiento de Clientes",     new Color(0, 123, 255),
                         e -> new FrmMantenimientoClientes().setVisible(true)));
                 panel.add(Box.createVerticalStrut(8));
+                panel.add(boton("Mantenimiento de Usuarios",     new Color(102, 16, 242),
+                        e -> new FrmMantenimientoUsuarios().setVisible(true)));
+                panel.add(Box.createVerticalStrut(8));
                 panel.add(boton("Mantenimiento de Habitaciones", new Color(0, 150, 136),
                         e -> new FrmMantenimientoHabitaciones().setVisible(true)));
                 panel.add(Box.createVerticalStrut(8));

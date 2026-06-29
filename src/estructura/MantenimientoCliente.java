@@ -7,7 +7,7 @@ public class MantenimientoCliente {
 
     // Retorna mensaje de error o null si fue exitoso
     public String registrarCliente(Cliente nuevo) {
-        String sql = "INSERT INTO clientes (dni, nombre, correo, password) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO clientes (dni, nombre, correo, password, rol) VALUES (?, ?, ?, ?, 'cliente')";
         try (Connection con = ConexionBD.conectar();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
@@ -75,7 +75,7 @@ public class MantenimientoCliente {
         Connection con = ConexionBD.conectar();
         if (con == null) throw new Exception("No se pudo conectar a la base de datos.\nVerifica que MySQL esté activo y que la contraseña en ConexionBD.java sea correcta.");
 
-        String sql = "SELECT dni, nombre, correo, password FROM clientes ORDER BY nombre";
+        String sql = "SELECT dni, nombre, correo, password FROM clientes WHERE rol='cliente' ORDER BY nombre";
         try (PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
