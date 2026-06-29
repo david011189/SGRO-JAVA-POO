@@ -58,7 +58,7 @@ public class FrmMantenimientoClientes extends JFrame {
 
     // ---------------------------------------------------------------
     public FrmMantenimientoClientes() {
-        setTitle("Mantenimiento de Clientes - SGRO");
+        setTitle("Mantenimiento de Clientes");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(750, 530);
         setLocationRelativeTo(null);

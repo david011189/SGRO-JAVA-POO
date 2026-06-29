@@ -65,12 +65,6 @@ public class FrmConfirmacion extends JFrame {
         JLabel pasos = new JLabel("1. Cotización  →  2. Carrito  →  3. Pago  →  [ 4. Confirmación ]", SwingConstants.CENTER);
         pasos.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         pasos.setForeground(new Color(100, 100, 100));
-
-        JLabel icon = new JLabel("✔", SwingConstants.CENTER);
-        icon.setFont(new Font("Segoe UI", Font.BOLD, 36));
-        icon.setForeground(new Color(0, 128, 0));
-
-        p.add(icon,  BorderLayout.NORTH);
         p.add(lbl,   BorderLayout.CENTER);
         p.add(pasos, BorderLayout.SOUTH);
         return p;
