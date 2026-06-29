@@ -9,13 +9,12 @@
 --  4. Listo. La base de datos "sgro" quedará creada.
 -- ============================================================
 
--- Crear y seleccionar la base de datos
 CREATE DATABASE IF NOT EXISTS sgro;
 USE sgro;
 
 -- ============================================================
 -- TABLA: clientes
--- Almacena usuarios del sistema con sus roles
+-- Roles: cliente (huésped), recepcionista, admin
 -- ============================================================
 CREATE TABLE IF NOT EXISTS clientes (
     id       INT          AUTO_INCREMENT PRIMARY KEY,
@@ -33,7 +32,6 @@ INSERT INTO clientes (dni, nombre, correo, password, rol) VALUES
 
 -- ============================================================
 -- TABLA: habitaciones
--- Las 5 habitaciones del Hotel Barlen a S/20.00 c/u
 -- ============================================================
 CREATE TABLE IF NOT EXISTS habitaciones (
     id          INT           AUTO_INCREMENT PRIMARY KEY,
@@ -54,7 +52,6 @@ INSERT INTO habitaciones (numero, tipo, capacidad, descripcion, estado, tarifa) 
 
 -- ============================================================
 -- TABLA: reserva
--- Registro de todas las reservas realizadas
 -- Estados: confirmada → en_curso → completada / cancelada
 -- ============================================================
 CREATE TABLE IF NOT EXISTS reserva (
@@ -73,11 +70,8 @@ CREATE TABLE IF NOT EXISTS reserva (
 
 -- ============================================================
 -- NOTA PARA BASES DE DATOS EXISTENTES
--- Si ya tienes la tabla reserva creada, ejecuta solo esto:
+-- Si ya tienes las tablas creadas, ejecuta solo esto:
 --   ALTER TABLE reserva ADD COLUMN fecha_checkin  DATETIME NULL;
 --   ALTER TABLE reserva ADD COLUMN fecha_checkout DATETIME NULL;
--- ============================================================
-
--- ============================================================
--- FIN DEL SCRIPT
+--   ALTER TABLE clientes ADD COLUMN rol ENUM('cliente','admin','recepcionista') NOT NULL DEFAULT 'cliente';
 -- ============================================================
